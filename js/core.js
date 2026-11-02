@@ -114,6 +114,7 @@
         q.topic = t.id;
         q.domain = t.domain;
         q.section = t.section;
+        if (SAT.passages && SAT.passages[q.id]) q.passage = SAT.passages[q.id]; // расширенный текст (data/passages-rw-*.js)
         (SAT.patches && SAT.patches[q.id] || []).forEach(([from, to]) => {
           const k = q.choices.indexOf(from);
           if (k >= 0) q.choices[k] = to; else console.warn('patch: вариант не найден в ' + q.id + ': ' + from);
@@ -223,13 +224,15 @@
     r.tries++; if (correct) r.right++;
     r.last = correct; r.ts = Date.now();
     p.qs[q.id] = r; touch(p); write();
+    if (SAT.campus) SAT.campus.check();
   };
   store.setLesson = (tid, on) => {
     const p = store.p(); if (!p) return;
     if (on) { p.lessons[tid] = Date.now(); touch(p); } else delete p.lessons[tid];
     write();
+    if (SAT.campus) SAT.campus.check();
   };
-  store.addTest = (a) => { const p = store.p(); p.tests.push(a); touch(p); write(); };
+  store.addTest = (a) => { const p = store.p(); p.tests.push(a); touch(p); write(); if (SAT.campus) SAT.campus.check(); };
   store.setExamDate = (d) => { store.p().examDate = d; write(); };
   store.exportJSON = () => JSON.stringify(read(), null, 2);
   store.importJSON = (txt) => {

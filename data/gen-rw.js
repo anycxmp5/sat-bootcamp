@@ -143,16 +143,17 @@
   const SUBJ = ['members of the coding club', 'visits to the school library', 'tons of paper recycled by the town', 'plots rented in the community garden', 'attendees at the spring concert'];
   const tableHtml = (label, years, vals) => `<table><tr><th>Year</th>${years.map((y) => `<th>${y}</th>`).join('')}</tr><tr><td>${label.length > 28 ? 'Total' : label}</td>${vals.map((v) => `<td>${v}</td>`).join('')}</tr></table>`;
   G('rw-evidence', [
-    (r) => { const label = pk(r, SUBJ), y0 = ri(r, 2016, 2021), ys = [y0, y0 + 1, y0 + 2, y0 + 3];
+    (r) => { const label = pk(r, SUBJ), y0 = ri(r, 2016, 2021), ys = [y0, y0 + 1, y0 + 2, y0 + 3],
+        ctx = pk(r, ['A local organization keeps yearly records so that it can report its progress to the community.', 'Each year, volunteers at a community center tally their results and post them in a newsletter.', 'A school group has recorded the same figure every year for several years in order to plan for the future.', 'Organizers compile their totals from sign-in sheets and use them to decide how to spend their budget.']);
       if (r() < 0.5) {
         const v = [ri(r, 10, 60)]; for (let i = 1; i < 4; i++) v.push(v[i - 1] + ri(r, 3, 15));
         return mc(2, 'Which choice most effectively uses data from the table to support the student’s claim?',
           [`The number of ${label} rose from ${v[0]} in ${ys[0]} to ${v[1]} in ${ys[1]}, ${v[2]} in ${ys[2]}, and ${v[3]} in ${ys[3]}.`, `The number of ${label} fell from ${v[3]} in ${ys[0]} to ${v[0]} in ${ys[3]}.`, `The number of ${label} in ${ys[3]} (${v[3]}) was higher than in ${ys[2]} (${v[2]}).`, `The number of ${label} in ${ys[1]} was ${v[1]}.`], 0,
-          'Утверждение: рост <b>каждый год</b>. Нужен вариант, который показывает весь ряд значений, а не одну пару лет.', P(`A student claims that the number of ${label} increased every year from ${ys[0]} to ${ys[3]}.`) + tableHtml(label, ys, v)); }
+          'Утверждение: рост <b>каждый год</b>. Нужен вариант, который показывает весь ряд значений, а не одну пару лет.', P(`${ctx} A student claims that the number of ${label} increased every year from ${ys[0]} to ${ys[3]}.`) + tableHtml(label, ys, v)); }
       const a = ri(r, 10, 40), pkv = a + ri(r, 15, 40), v = [a, a + ri(r, 5, 12), pkv, a + ri(r, 3, 10)];
       return mc(2, 'Which choice most effectively uses data from the table to support the student’s claim?',
         [`The number of ${label} was highest in ${ys[2]} at ${v[2]}, compared with ${v[0]} in ${ys[0]}, ${v[1]} in ${ys[1]}, and ${v[3]} in ${ys[3]}.`, `The number of ${label} was highest in ${ys[3]} at ${v[3]}.`, `The number of ${label} was lowest in ${ys[2]} at ${v[2]}.`, `The number of ${label} did not change from ${ys[0]} to ${ys[3]}.`], 0,
-        'Утверждение о пике: верный вариант называет год максимума и сравнивает его с остальными годами.', P(`A student claims that the number of ${label} peaked in ${ys[2]}.`) + tableHtml(label, ys, v)); },
+        'Утверждение о пике: верный вариант называет год максимума и сравнивает его с остальными годами.', P(`${ctx} A student claims that the number of ${label} peaked in ${ys[2]}.`) + tableHtml(label, ys, v)); },
   ]);
 
   /* ---------- Inferences: логические выводы ---------- */
@@ -166,9 +167,10 @@
   ];
   const NAMES = ['Priya', 'Marcus', 'Elena', 'Jun', 'Sofia', 'Omar', 'Lena', 'Tariq'];
   G('rw-inferences', [
-    (r) => { const [g, a, b, p] = pk(r, SYLL), n = pk(r, NAMES);
+    (r) => { const [g, a, b, p] = pk(r, SYLL), n = pk(r, NAMES),
+        ctx = pk(r, ['The organizers keep careful records of who takes part in each event.', 'The group follows its rules without exceptions.', 'The club’s secretary explained how things work at the start of the term.', 'The coordinator described the policy in an email to the whole group.']);
       return mc(2, 'Which choice most logically completes the text?', [`must have ${p}`, `might have ${p}`, `cannot have ${p}`, `must not have ${p}`], 0,
-        'Правило сформулировано без исключений («every»), а условие выполнено — вывод <b>обязателен</b>. «Might» слишком слаб, остальное противоречит правилу.', P(`Every ${g} who ${a} also ${b}. ${n} ${a}, so ${n} ______`)); },
+        'Правило сформулировано без исключений («every»), а условие выполнено — вывод <b>обязателен</b>. «Might» слишком слаб, остальное противоречит правилу.', P(`${ctx} Every ${g} who ${a} also ${b}. ${n} ${a}, so ${n} ______`)); },
   ]);
 
   /* ---------- Cross-Text Connections ---------- */
@@ -191,6 +193,19 @@
     ['Free admission makes museums more accessible to low-income families.',
       { challenge: 'After one museum eliminated fees, the share of visitors from low-income households did not change.', partial: 'Free admission helps, but transportation and unfamiliarity with museums appear to be larger barriers.', extension: 'Free admission may also reduce a museum’s revenue, forcing cuts to educational programs.', support: 'After one museum eliminated fees, visits from low-income households doubled within a year.' }],
   ];
+  // Дополнительные предложения: делают тексты длиннее, не меняя логику связи между ними
+  const XT_T1 = [
+    'Supporters add that gardens also give neighbors a reason to spend time outdoors.', 'Several cities have begun testing electric buses on their busiest routes.',
+    'Many pediatricians recommend setting aside time for reading every day.', 'Several school boards are now considering moving their first bells later.',
+    'Hive kits for rooftops have become increasingly popular in recent years.', 'Many districts have recently expanded their tutoring programs.',
+    'City planners increasingly design new developments around sidewalks and short blocks.', 'Several museums have recently experimented with eliminating their fees.',
+  ];
+  const XT_T2 = {
+    challenge: ['The authors say the result held up in every group they examined.', 'The authors say they were surprised by how consistent the result was.'],
+    partial: ['The authors urge decision-makers to keep both factors in mind.', 'The authors add that the two factors may work together.'],
+    extension: ['The authors say this effect has received little attention so far.', 'The authors say the effect deserves further study.'],
+    support: ['The authors say the effect was visible in every group studied.', 'The authors say the result was larger than they had expected.'],
+  };
   const XT_ANS = {
     challenge: 'It presents evidence that calls the claim in Text 1 into question',
     partial: 'It agrees with Text 1 in part but argues that another factor matters more',
@@ -206,10 +221,11 @@
     'It summarizes the research methods used in the study in Text 1',
   ];
   G('rw-cross', [
-    (r) => { const [t1, rel] = pk(r, XT), kind = pk(r, ['challenge', 'partial', 'extension', 'support']);
+    (r) => { const bi = Math.floor(r() * XT.length), [t1base, rel] = XT[bi], kind = pk(r, ['challenge', 'partial', 'extension', 'support']),
+        t1 = t1base + ' ' + XT_T1[bi], t2 = rel[kind] + ' ' + pk(r, XT_T2[kind]);
       const bad = SAT.util.shuffle(XT_BAD, r).slice(0, 3);
       return mc(kind === 'partial' ? 3 : 2, 'Which choice best describes how Text 2 relates to Text 1?', [XT_ANS[kind]].concat(bad), 0,
-        { challenge: 'Text 2 приводит данные, <b>противоречащие</b> утверждению Text 1.', partial: 'Text 2 соглашается частично («do… but»), но называет <b>другой, более важный фактор</b>.', extension: 'Text 2 не спорит с Text 1, а называет <b>дополнительное следствие</b>.', support: 'Text 2 даёт данные, <b>подтверждающие</b> утверждение Text 1.' }[kind], T12(t1, rel[kind])); },
+        { challenge: 'Text 2 приводит данные, <b>противоречащие</b> утверждению Text 1.', partial: 'Text 2 соглашается частично («do… but»), но называет <b>другой, более важный фактор</b>.', extension: 'Text 2 не спорит с Text 1, а называет <b>дополнительное следствие</b>.', support: 'Text 2 даёт данные, <b>подтверждающие</b> утверждение Text 1.' }[kind], T12(t1, t2)); },
   ]);
 
   /* ---------- Text Structure and Purpose ---------- */
@@ -232,17 +248,20 @@
     ['The Marlow Mill once produced cotton fabric for markets across the region.', 'After it closed in 1978, the building stood empty for nearly twenty years.', 'It now contains apartments, small studios, and a community kitchen.'],
     ['Founded as a one-room school, Brightwater Academy enrolled just twelve students in its first year.', 'By the 1950s it had grown into a boarding school with several dormitories.', 'It now serves over a thousand students through online and in-person programs.'],
   ];
+  const MISC_X = ['The saying persists mostly because strikes are rare in any one spot.', 'Neurologists describe the idea as one of the most persistent myths about the brain.', 'The misconception endures in part because the wall is so famously long.', 'Still, the belief remains widespread among parents and teachers.', 'The popular explanation endures largely because it is simple and appealing.'];
+  const EXAMPLES_X = ['Such defenses can mean the difference between life and death in the wild.', 'These strategies allow the plants to thrive in soils that lack nitrogen.', 'Such projects often revive neighborhoods that had seemed beyond saving.', 'Engineers call this approach biomimicry.'];
+  const CHANGE_X = ['The building itself, with its red-brick facade, has hardly changed at all.', 'Its staff say the collection of books is now only a small part of what patrons use.', 'Its brick smokestack, once a symbol of the town’s industry, still stands.', 'Its original one-room building is preserved as a small museum.'];
   const PURP = 'Which choice best states the main purpose of the text?';
   G('rw-structure', [
-    (r) => { const [a, b, c] = pk(r, MISC);
+    (r) => { const mi = Math.floor(r() * MISC.length), [a, b, c] = MISC[mi], d = MISC_X[mi];
       return mc(1, PURP, ['To correct a widely held misconception', 'To trace the history of a familiar saying', 'To argue that popular beliefs are always based on research', 'To compare two competing scientific explanations'], 0,
-        'Структура «Many believe… In fact…»: автор <b>опровергает распространённое заблуждение</b>.', P(`${a} ${b} ${c}`)); },
-    (r) => { const [a, b, c] = pk(r, EXAMPLES);
+        'Структура «Many believe… In fact…»: автор <b>опровергает распространённое заблуждение</b>.', P(`${a} ${b} ${c} ${d}`)); },
+    (r) => { const ei = Math.floor(r() * EXAMPLES.length), [a, b, c] = EXAMPLES[ei], d = EXAMPLES_X[ei];
       return mc(1, PURP, ['To illustrate a general claim with specific examples', 'To question whether the general claim is accurate at all', 'To rank the examples in order of their importance', 'To explain how researchers first discovered each example'], 0,
-        'Первое предложение — общее утверждение, дальше два конкретных примера: цель — <b>проиллюстрировать утверждение примерами</b>.', P(`${a} ${b} ${c}`)); },
-    (r) => { const [a, b, c] = pk(r, CHANGE);
+        'Первое предложение — общее утверждение, дальше два конкретных примера: цель — <b>проиллюстрировать утверждение примерами</b>.', P(`${a} ${b} ${c} ${d}`)); },
+    (r) => { const ci = Math.floor(r() * CHANGE.length), [a, b, c] = CHANGE[ci], d = CHANGE_X[ci];
       return mc(2, PURP, ['To trace how an institution’s activities changed over time', 'To argue that the institution should return to its original purpose', 'To compare the institution with similar institutions elsewhere', 'To explain why the institution became financially successful'], 0,
-        'Текст идёт от прошлого к настоящему: <b>как менялась деятельность учреждения</b>. Сравнений и оценок нет.', P(`${a} ${b} ${c}`)); },
+        'Текст идёт от прошлого к настоящему: <b>как менялась деятельность учреждения</b>. Сравнений и оценок нет.', P(`${a} ${b} ${c} ${d}`)); },
   ]);
 
   /* ---------- Words in Context (банк) ---------- */

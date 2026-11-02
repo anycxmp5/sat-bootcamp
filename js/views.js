@@ -78,6 +78,8 @@
       <p>Курс по Digital SAT: ${S.topics.length} тем, ${S.questions.length} заданий в стиле экзамена, ${S.TEST_COUNT} полных пробных тестов с официальным таймером.</p>
       <div class="row">${nt ? `<a class="btn gold" href="#/topic/${nt.id}">▶ Продолжить: ${nt.title}</a>` : ''}<a class="btn ghost" href="#/tests">Practice Tests</a></div></div>
       <div class="spacer"></div>
+      ${S.campus.homePanel()}
+      <div class="spacer"></div>
       <div class="grid four">
         <div class="card stat"><div class="num">${o.done}<small style="font-size:20px">/${S.topics.length}</small></div><div class="lbl">тем освоено</div></div>
         <div class="card stat"><div class="num">${o.tries}</div><div class="lbl">задач решено · ${acc}%</div></div>
@@ -224,6 +226,11 @@
     const idx = S.topics.indexOf(t), next = S.topics[idx + 1];
     const missed = PR.qs.map((q, k) => [q, k]).filter(([q, k]) => !SAT.isCorrect(q, PR.sel[k]));
     const hasGen = (S.gens[t.id] || []).length > 0;
+    if (!PR.celebrated) {
+      PR.celebrated = true;
+      if (right === n) S.campus.flag('perfect');
+      if (pct >= 70) S.campus.confetti();
+    }
     view(`<div class="crumbs"><a href="#/topic/${t.id}">← ${t.title}</a></div>
       <div class="card blue" style="text-align:center"><h2>${pct >= 70 ? 'Touchdown! 🏈' : 'Keep training 💪'}</h2>
         <div class="score-big">${right}/${n}</div><p>Точность ${pct}%. ${PR.drill ? 'Это дополнительная практика: на статус темы она не влияет.' : pct >= 70 ? 'Тема засчитана как освоенная (если урок отмечен изученным).' : 'Перечитайте урок и попробуйте ещё раз — нужно минимум 70%.'}</p></div>
@@ -281,6 +288,12 @@
     const weak = Object.entries(a.items.reduce((m, it) => { const q = S.getQ(it.qid); if (q && !it.ok) m[q.topic] = (m[q.topic] || 0) + 1; return m; }, {}))
       .sort((x, y) => y[1] - x[1]).slice(0, 5);
     results.filter = results.filter || 'all';
+    results.done = results.done || {};
+    if (!results.done[id]) { // конфетти — если это лучший результат на данный момент
+      results.done[id] = true;
+      const prev = ST.p().tests.filter((t) => t.id !== id && t.ts < a.ts).map((t) => t.total);
+      if (!prev.length || a.total >= Math.max.apply(null, prev)) S.campus.confetti();
+    }
     const items = a.items.map((it, i) => ({ it, i, q: S.getQ(it.qid) })).filter((x) => x.q)
       .filter((x) => results.filter === 'all' || (results.filter === 'wrong' && !x.it.ok) || (results.filter === 'flag' && x.it.flag));
     view(`<div class="card blue" style="text-align:center">
@@ -327,6 +340,8 @@
     const grid = S.topics.map((t) => { const s = S.stats.topic(t.id); return `<a class="topic-row" href="#/topic/${t.id}" style="margin:0"><span class="t"><b style="font-size:16px">${t.title}</b></span>${ui.statusChip(s.status)}</a>`; }).join('');
     const hist = p.tests.slice().reverse().map((t) => `<tr><td>${U.date(t.ts)}</td><td>Test ${t.testNo}</td><td>${t.mode === 'timed' ? 'Timed' : 'Untimed'}</td><td>${t.sections.rw.score}</td><td>${t.sections.math.score}</td><td><b>${t.total}</b></td><td><a href="#/results/${t.id}">Разбор</a></td></tr>`).join('');
     view(`<h1>My Locker</h1>
+      ${S.campus.lockerPanel()}
+      <div class="spacer"></div>
       <div class="grid four">
         <div class="card stat"><div class="num">${o.studied}/${S.topics.length}</div><div class="lbl">уроков изучено</div></div>
         <div class="card stat"><div class="num">${o.done}</div><div class="lbl">тем освоено</div></div>

@@ -74,7 +74,7 @@
       const days = Math.ceil((new Date(p.examDate + 'T00:00:00') - new Date()) / 86400000);
       if (days >= 0) cd = `<div class="card stat countdown"><div class="num">${days}</div><div class="lbl">дней до экзамена</div></div>`;
     }
-    view(`<div class="hero"><h1>Привет, <em>${U.esc(ST.name())}</em>!</h1>
+    view(`<div class="hero"><h1>Wassup, <em>${U.esc(ST.name())}</em>!</h1>
       <p>Курс по Digital SAT: ${S.topics.length} тем, ${S.questions.length} заданий в стиле экзамена, ${S.TEST_COUNT} полных пробных тестов с официальным таймером.</p>
       <div class="row">${nt ? `<a class="btn gold" href="#/topic/${nt.id}">▶ Продолжить: ${nt.title}</a>` : ''}<a class="btn ghost" href="#/tests">Practice Tests</a></div></div>
       <div class="spacer"></div>
